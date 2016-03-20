@@ -38,11 +38,19 @@ var CommentBox = React.createClass({
            }.bind(this)
         });
     },
+    handleCommentDelete: function(id){
+      console.log("id: " + id, this.state.data);
+      var comments = this.state.data;
+      var newComments = comments.filter(function(item){ 
+          return item.id !== id;
+        });
+      this.setState({data:newComments});
+    },
     render: function() {
         return (
             <div className="commentBox">
                 <h1>Comments</h1>
-                <CommentList data={this.state.data} />
+                <CommentList data={this.state.data} onCommentDelete={this.handleCommentDelete} />
                 <CommentForm onCommentSubmit={this.handleCommentSubmit} />
             </div>
         );
@@ -50,14 +58,18 @@ var CommentBox = React.createClass({
 });
 
 var CommentList = React.createClass({
+    handleCommentDelete: function(id){
+      console.log("id: " + id);
+      this.props.onCommentDelete(id)
+    },
     render: function(){
         var commentNodes = this.props.data.map(function(comment){
             return (
-                <Comment author={comment.author} key={comment.id}>
+                <Comment author={comment.author} key={comment.id} id={comment.id} onCommentDelete={this.handleCommentDelete}>
                     {comment.text}
                 </Comment>
             );
-        });
+        }, this);
         return( 
           <div className="commentList">
             {commentNodes}
@@ -97,13 +109,18 @@ var CommentForm = React.createClass({
 });
 
 var Comment = React.createClass({
+    handleDeleteComment: function(e){
+      e.preventDefault();
+      this.props.onCommentDelete(this.props.id)
+    },
     render: function(){
         return(
             <div className="comment">
                 <h2 className="commentAuthor">
                     {this.props.author}
                 </h2>
-                {this.props.children}
+                {this.props.children}<br />
+                <a href="#" className="delete" onClick={this.handleDeleteComment} >Delete</a>
             </div>
         );
     }
