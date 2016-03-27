@@ -71,6 +71,27 @@ app.post('/api/comments', function(req, res) {
   });
 });
 
+app.delete('/api/comments/:id', function(req, res){
+  fs.readFile(COMMENTS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    var comments = JSON.parse(data);
+    comments = comments.filter(function(item){ 
+        return item.id !== +req.params.id 
+    });
+    console.log(comments);
+  
+    fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      res.json(comments);
+    });  
+  });
+});
 
 app.listen(app.get('port'), function() {
   console.log('Server started: http://localhost:' + app.get('port') + '/');

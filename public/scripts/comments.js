@@ -45,6 +45,20 @@ var CommentBox = React.createClass({
           return item.id !== id;
         });
       this.setState({data:newComments});
+      
+      $.ajax({
+           url: this.props.url + '/' + id,
+           dataType: 'json',
+           type: 'DELETE',
+           success: function(data){
+               //state has already been set. Do nothing.
+           }.bind(this),
+           error: function(xhr, status, err){
+               //Save failed, revert to previous state of the app
+               this.setState({data:comments});
+               console.error(this.props.url, status, err.toString());
+           }.bind(this)
+        });
     },
     render: function() {
         return (
